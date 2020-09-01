@@ -59,7 +59,7 @@ public class SplashActivity extends AppCompatActivity {
         });
 
         String Email="hjk";
-        String Pwd="123";
+        String Pwd="12344";
 
         userViewModel.getLogin(Email).observe(this, userViewModel->{
 
