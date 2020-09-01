@@ -58,9 +58,7 @@ public class SplashActivity extends AppCompatActivity {
             musicViewModel.set_current_music(m.get(pos_));
         });
 
-        String Email="hjk";
-        String Pwd="123";
-
+        
         userViewModel.getLogin(Email).observe(this, userViewModel->{
 
         });
