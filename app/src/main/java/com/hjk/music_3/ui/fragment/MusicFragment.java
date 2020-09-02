@@ -11,19 +11,22 @@ import androidx.annotation.NonNull;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.hjk.music_3.R;
 import com.hjk.music_3.Service.MusicApplication;
 import com.hjk.music_3.data.local.model.Music;
+
 import com.hjk.music_3.databinding.FragmentMusicBinding;
+import com.hjk.music_3.databinding.ItemMusicBinding;
 import com.hjk.music_3.ui.activity.PlayerActivity;
 import com.hjk.music_3.ui.adapter.MusicAdapter;
+
 import com.hjk.music_3.ui.viewmodel.MusicViewModel;
 import com.hjk.music_3.ui.viewmodel.UserViewModel;
-
+import com.hjk.music_3.utils.ItemOffDecoration;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -39,53 +42,53 @@ public class MusicFragment extends Fragment implements MusicAdapter.OnItemClickL
 
     MusicAdapter musicAdapter2;
 
-    SwipeRefreshLayout refreshLayout;
+    ItemMusicBinding itemMusicBinding;
+
 
     FragmentMusicBinding binding;
+
 
     public static MusicFragment newInstance(){return new MusicFragment();}
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState){
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle saveInstanceState){
         setHasOptionsMenu(true);
-        userViewModel=ViewModelProviders.of(this).get(UserViewModel.class);
 
         binding= DataBindingUtil.inflate(inflater,R.layout.fragment_music,container,false);
+        itemMusicBinding=DataBindingUtil.inflate(inflater,R.layout.item_music,container,false);
+
         View root=binding.getRoot();
-        binding.setTest(userViewModel);
+
+
 
         return root;
-
     }
 
-     @Override
+
+    @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState){
         super.onActivityCreated(savedInstanceState);
-//        refreshLayout=getActivity().findViewById(R.id.main_refresh);
-//        refreshLayout.setOnRefreshListener(this::getData);
+
         getData();
     }
 
 
 
+
     public void getData(){
-        musicViewModel =ViewModelProviders.of(this).get(MusicViewModel.class);
+        musicViewModel= ViewModelProviders.of(this).get(MusicViewModel.class);
 
-        musicViewModel.getMusic().observe(this, m->{
-           if(m!=null){
-               setMusic(m);
-               setMusic2(m);
-               setMusic3(m);
-               MusicViewModel.insert(m);
-               MusicApplication.getInstance().getServiceInterface().setViewModel( ViewModelProviders.of(this).get(MusicViewModel.class));
+        musicViewModel.getMusic().observe(this,musicViewModel->{
+            if(musicViewModel!=null){
+                setMusic(musicViewModel);
+                setMusic2(musicViewModel);
+                setMusic3(musicViewModel);
 
-               music=m;
-           }
+                MusicApplication.getInstance().getServiceInterface().setViewModel( ViewModelProviders.of(this).get(MusicViewModel.class));
 
+            }
         });
-
     }
 
     public void setMusic(List<Music> m){
@@ -119,21 +122,15 @@ public class MusicFragment extends Fragment implements MusicAdapter.OnItemClickL
 
     }
 
-
     @Override
-    public void onItemClicked(int pos, ImageView imageView) throws Exception {
-
+    public void onItemClicked(int pos, ImageView imageView) throws Exception{
         final int pos_=pos;
         musicViewModel.setPos(pos_);
+        musicViewModel.set_current_music(pos_);
 
-        musicViewModel.getMusic().observe(this,m->{
-            musicViewModel.set_current_music(m.get(pos_));
-        });
 
-        MusicApplication.getInstance().getServiceInterface().setData();
+
         Intent intent=new Intent(getActivity(), PlayerActivity.class);
         startActivity(intent);
     }
-
-
 }

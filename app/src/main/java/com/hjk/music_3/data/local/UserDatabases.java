@@ -10,10 +10,7 @@ import androidx.room.RoomDatabase;
 import androidx.room.TypeConverters;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
-import com.hjk.music_3.data.local.dao.MusicDao;
 import com.hjk.music_3.data.local.dao.UserDao;
-import com.hjk.music_3.data.local.model.Converters;
-import com.hjk.music_3.data.local.model.Music;
 import com.hjk.music_3.data.local.model.User;
 
 import java.util.concurrent.ExecutorService;
@@ -28,7 +25,6 @@ import java.util.concurrent.Executors;
         entities = {User.class},
         version = 1,
         exportSchema = false)
-@TypeConverters(Converters.class)
 public abstract class UserDatabases extends RoomDatabase {
 
     public static final String DATABASE_NAME = "User.db";

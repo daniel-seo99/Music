@@ -112,9 +112,9 @@ public class DreamFragment extends Fragment implements MusicAdapter2.OnItemClick
     public void onItemClicked(int pos, ImageView imageView) throws Exception{
         final int pos_=pos;
 
-        musicViewModel.getMusic().observe(this,m->{
-            musicViewModel.set_current_music(m.get(pos_));
-        });
+        musicViewModel.setPos(pos_);
+        musicViewModel.set_current_music(pos_);
+
         MusicApplication.getInstance().getServiceInterface().setData();
         Intent intent=new Intent(getActivity(), PlayerActivity.class);
         startActivity(intent);

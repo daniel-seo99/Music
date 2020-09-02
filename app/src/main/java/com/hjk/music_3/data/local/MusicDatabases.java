@@ -11,10 +11,7 @@ import androidx.room.TypeConverters;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
 import com.hjk.music_3.data.local.dao.MusicDao;
-import com.hjk.music_3.data.local.dao.UserDao;
-import com.hjk.music_3.data.local.model.Converters;
 import com.hjk.music_3.data.local.model.Music;
-import com.hjk.music_3.data.local.model.User;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -28,10 +25,9 @@ import java.util.concurrent.Executors;
         entities = {Music.class},
         version = 1,
         exportSchema = false)
-@TypeConverters(Converters.class)
 public abstract class MusicDatabases extends RoomDatabase {
 
-    public static final String DATABASE_NAME = "Movies.db";
+    public static final String DATABASE_NAME = "Music.db";
 
     private static MusicDatabases INSTANCE;
 
@@ -39,26 +35,26 @@ public abstract class MusicDatabases extends RoomDatabase {
 
     private static final int NUMBER_OF_THREADS=4;
 
-     public static final ExecutorService databaseWriteExecutor =
+    public static final ExecutorService databaseWriteExecutor =
             Executors.newFixedThreadPool(NUMBER_OF_THREADS);
 
     public abstract MusicDao musicDao();
 
 
     public static MusicDatabases getInstance(Context context) {
-            if (INSTANCE == null) {
-                synchronized (MusicDatabases.class) {
+        if (INSTANCE == null) {
+            synchronized (MusicDatabases.class) {
 
-                    if(INSTANCE==null) {
-                        INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
-                                MusicDatabases.class,"music_database")
-                                .addCallback(sRoomDatabaseCallback)
-                                .allowMainThreadQueries()
-                                .build();
-                    }
+                if(INSTANCE==null) {
+                    INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
+                            MusicDatabases.class,"music_database")
+                            .addCallback(sRoomDatabaseCallback)
+                            .allowMainThreadQueries()
+                            .build();
                 }
             }
-            return INSTANCE;
+        }
+        return INSTANCE;
     }
 
 

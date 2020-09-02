@@ -52,7 +52,7 @@ public class MusicActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-            setupViewFragment();
+        setupViewFragment();
 
 
         binding= DataBindingUtil.setContentView(this,R.layout.activity_main);
@@ -74,15 +74,32 @@ public class MusicActivity extends AppCompatActivity {
 
         musicViewModel=ViewModelProviders.of(this).get(MusicViewModel.class);
 
-        binding= DataBindingUtil.setContentView(this,R.layout.activity_main);
-        binding.setActivity(this);
+        musicViewModel.getIsPlaying().observe(this,new Observer<Boolean>(){
+            @Override
+            public void onChanged(Boolean aBoolean) {
+                if(aBoolean){
+                    binding.playBtn.setImageResource(R.drawable.ic_pause_48dp);
+                }else{
+                    binding.playBtn.setImageResource(R.drawable.ic_play_arrow_48dp);
+                }
+            }
+        });
 
-        if(MusicApplication.getInstance().getServiceInterface().isPlaying()){
-            binding.playBtn.setImageResource(R.drawable.ic_pause_48dp);
+        musicViewModel.getProgress().observe(this,new Observer<String>(){
+            @Override
+            public void onChanged(String string){
+                binding.musicTime.setText(string);
+            }
+        });
 
-        }else{
-            binding.playBtn.setImageResource(R.drawable.ic_play_arrow_48dp);
-        }
+        musicViewModel.current_music().observe(this,new Observer<Music>(){
+            @Override
+            public void onChanged(Music music){
+                binding.musicTitle.setText(music.getTitle());
+                Binding.PicassoImage(binding.musicImage, music.getImage());
+
+            }
+        });
 
         setupViewFragment();
         setupBottomNavigation();
@@ -91,76 +108,6 @@ public class MusicActivity extends AppCompatActivity {
         //뮤직 선택후 다시 UI업데이트를 위해
     }
 
-    final Handler handler=new Handler(Looper.getMainLooper()){
-        @Override
-        public void handleMessage(Message msg){
-            switch(msg.what){
-                case 0:
-                    if(musicViewModel.getChange()){
-                        UI();
-                    }
-
-                    String music_time=Integer.toString(msg.arg1);
-                    String all_music_time=Integer.toString(msg.arg2);
-                    if(music_time.length()>=3) {
-                        music_time = music_time.substring(0, 1) + ":" + music_time.substring(1);
-                    }
-                    else{
-                        music_time="0:"+music_time.substring(0);
-                    }
-                    if(all_music_time.length()>=3) {
-                        all_music_time = all_music_time.substring(0, 1) + ":" + all_music_time.substring(1);
-                    }
-                    else{
-                        all_music_time="0:"+all_music_time.substring(0);
-                    }
-                    binding.musicTime.setText(music_time+"/"+all_music_time);
-                    musicViewModel.setChange(false);
-                    break;
-            }
-        }
-    };
-
-    class Thread extends java.lang.Thread{
-        @Override
-        public void run(){
-            super.run();
-
-
-            while(musicViewModel.getIsPlaying()){
-
-                int duration=MusicApplication.getInstance().getServiceInterface().getDuration();
-                time = Integer.parseInt(SecondUtils.formateMilliSeccond(duration));
-
-                int current_pos=MusicApplication.getInstance().getServiceInterface().current_position();
-                time2=Integer.parseInt(SecondUtils.formateMilliSeccond(current_pos));
-
-
-                Message message=handler.obtainMessage();
-
-                message.what=0;
-
-                String msg=new String(":");
-
-                message.obj=msg;
-
-
-                message.arg1=time2;
-                message.arg2=time;
-                System.out.println(message.arg1);
-
-                handler.sendMessage(message);
-
-                try{
-                    sleep(1000);
-                }catch(Exception e){
-                    e.printStackTrace();
-                }
-
-            }
-
-        }
-    }
 
 
     public void Intent_Current_Music(){
@@ -169,49 +116,28 @@ public class MusicActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    public void UI(){
-        musicViewModel.getMusic().observe(this,m->{
-            binding.musicTitle.setText(m.get(musicViewModel.getPos()).getTitle());
-            Binding.PicassoImage(binding.musicImage, m.get(musicViewModel.getPos()).getImage());
-        });
 
 
-        binding.playBtn.setImageResource(R.drawable.ic_pause_48dp);
-
-        getTime();
-        //다음 재생시 시간 표시 이상하게됨, 시간 표시 문제 해결하기
-    }
-
-    public void getTime(){
-        System.out.println("쓰레드 실행 여부"+musicViewModel.getIsPlaying());
-        if(musicViewModel.getIsPlaying()) {
-            thread = new Thread();
-            thread.start();
-        }
-
-    }
 
     public void start_pause(){
         if(MusicApplication.getInstance().getServiceInterface().isPlaying()){
             MusicApplication.getInstance().getServiceInterface().pause();
-             binding.playBtn.setImageResource(R.drawable.ic_play_arrow_48dp);
 
         }
         else{
             MusicApplication.getInstance().getServiceInterface().start();
-            binding.playBtn.setImageResource(R.drawable.ic_pause_48dp);
 
         }
     }
 
     public void next()   {
         MusicApplication.getInstance().getServiceInterface().next();
-        UI();
+
     }
 
     public void prev(){
         MusicApplication.getInstance().getServiceInterface().prev();
-        UI();
+
     }
 
     private void setupViewFragment(){

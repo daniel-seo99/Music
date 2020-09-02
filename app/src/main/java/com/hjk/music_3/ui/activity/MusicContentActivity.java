@@ -87,9 +87,9 @@ public class MusicContentActivity extends AppCompatActivity implements MusicCont
     @Override
     public void onItemClicked(int pos, LinearLayout linearLayout) throws Exception{
         final int pos_=pos;
-        musicViewModel.getMusic().observe(this,m->{
-            musicViewModel.set_current_music(m.get(pos_));
-        });
+        musicViewModel.setPos(pos_);
+        musicViewModel.set_current_music(pos_);
+
         MusicApplication.getInstance().getServiceInterface().setData();
         Intent intent=new Intent(this, PlayerActivity.class);
         startActivity(intent);

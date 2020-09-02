@@ -112,7 +112,7 @@ dependencies {
 
     implementation 'cn.hugeterry.coordinatortablayout:coordinatortablayout:1.2.2'
 
-    implementation files('libs/YouTubeAndroidPlayerApi.jar')
+
 
     implementation 'com.github.florent37:materialviewpager:1.2.3'
     implementation 'com.flaviofaria:kenburnsview:1.0.7'

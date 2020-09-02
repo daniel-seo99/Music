@@ -16,21 +16,30 @@ public class UserViewModel extends AndroidViewModel {
 
     private static MutableLiveData<User> user=null;
     private static UserRepository userRepository_local;
-    private UserRepository userRepository;
+    private UserRepository userRepository=UserRepository.getInstance();
 
     private LiveData<User> local_user;
-    private static int save_music=99999;
-    private static int save_back=99999;
+    private static int save_music=0;
+    private static int save_back=0;
+    private static int save_login=0;
+
+    public void init(){
+        if(user!=null)
+            return;
+        userRepository=UserRepository.getInstance();
+    }
 
     public UserViewModel(Application application){
         super(application);
         userRepository_local=new UserRepository(application);
+
         local_user=userRepository_local.get_local_user();
 
         save_music=userRepository_local.load_save_music();
-        if(save_music==0){ save_music=save_music+1; }
+
         save_back=userRepository_local.load_save_back();
-        if(save_back==0){ save_back=save_back+1; }
+
+        save_login=userRepository_local.load_save_login();
 
     }
 
@@ -44,13 +53,15 @@ public class UserViewModel extends AndroidViewModel {
 
     public static int load_save_music(){return save_music;}
 
-    public void init(){
-        if(user!=null)
-            return;
-        userRepository=UserRepository.getInstance();
+    public  void save_login(int save_login){
+        this.save_login=save_login;
+        userRepository_local.save_login(save_login);
     }
 
-    public LiveData<User> getLogin(String id){
+    public static int load_save_login(){return save_login;}
+
+
+    public MutableLiveData<User> getLogin(String id){
         user=userRepository.getLogin(id);
         return user;
     }

@@ -27,6 +27,7 @@ public class UserRepository {
     public static LiveData<User> user;
     static int save_music;
     static int save_back;
+    static int save_login;
 
     public static UserRepository getInstance(){
         if(userRepository==null)
@@ -46,6 +47,7 @@ public class UserRepository {
         }
         save_music=userDao.load_save_music();
         save_back=userDao.load_save_back();
+        save_login=userDao.load_save_login();
     }
 
     public static int load_save_back(){return save_back;}
@@ -56,21 +58,33 @@ public class UserRepository {
         });
     }
 
+    public static int load_save_music(){
+        return save_music;
+    }
+
+    public static void save_music(int save_music){
+        UserDatabases.databaseWriteExecutor.execute(()->{
+            userDao.save_music(save_music);
+        });
+    }
+
+    public static int load_save_login(){
+        return save_login;
+    }
+
+    public static void save_login(int save_login){
+        UserDatabases.databaseWriteExecutor.execute(()->{
+            userDao.save_login(save_login);
+        });
+    }
+
     public static void insert_user(User user){userDao.insert_user(user);}
 
     public static LiveData<User> get_local_user(){
         return user;
     }
 
-    public static int load_save_music(){
-        return save_music;
-    }
 
-    public static void save_music(int save){
-        UserDatabases.databaseWriteExecutor.execute(()->{
-            userDao.save_music(save);
-        });
-    }
 
     public MutableLiveData<User> getLogin(String id){
         MutableLiveData<User> user=new MutableLiveData<>();
