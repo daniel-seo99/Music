@@ -36,7 +36,6 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     public void sign(){
-
         user.setId(binding.id.getText().toString());
         user.setPwd(binding.pwd.getText().toString());
         user.setName(binding.name.getText().toString());
@@ -45,34 +44,39 @@ public class RegisterActivity extends AppCompatActivity {
 
         String objJson=gson.toJson(user);
 
-
         userService= RetrofitService.getRetro().create(UserService.class);
         Call<ResponseBody> sign=userService.sign(objJson);
 
-        sign.enqueue(new Callback<ResponseBody>(){
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response){
-                try {
-                    String result=response.body().string();
-                    if(result.equals("1")){
-                        Toast.makeText(getApplicationContext(),"회원가입 되었습니다",Toast.LENGTH_SHORT).show();
-                        UserViewModel.insert_user(user);
-                        Intent intent=getIntent();
-                        intent=new Intent(RegisterActivity.this,LoginActivity.class);
-                        startActivity(intent);
-                    }
-                    else{
-                            System.out.println("같지 않음");
-                    }
-                }catch(Exception e){
-                    e.printStackTrace();
-                }
-            }
+        if(!android.util.Patterns.EMAIL_ADDRESS.matcher(binding.id.getText().toString()).matches()){
+            Toast.makeText(getApplicationContext(),"이메일 형식이 아닙니다",Toast.LENGTH_SHORT).show();
+            return;
+        }
 
-            @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t){
-                Toast.makeText(getApplicationContext(),"회원가입 실패",Toast.LENGTH_SHORT).show();
-            }
-        });
+        else {
+            sign.enqueue(new Callback<ResponseBody>() {
+                @Override
+                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+
+                    try {
+                        String result = response.body().string();
+
+                        Toast.makeText(getApplicationContext(), "회원가입 되었습니다", Toast.LENGTH_SHORT).show();
+                        UserViewModel.insert_user(user);
+                        Intent intent = getIntent();
+                        intent = new Intent(RegisterActivity.this, LoginActivity.class);
+                        startActivity(intent);
+
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<ResponseBody> call, Throwable t) {
+                    Toast.makeText(getApplicationContext(), "회원가입 실패", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
     }
 }
