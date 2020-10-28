@@ -1,7 +1,7 @@
 /**********************************************
 Author: AppForest.kr
 Date: Oct 28, 2020
-Description: SOUND PLAYER
+Description: 4 SEASONS SOUND PLAYER
 Rights: Copyrighted templates and codes. This template and code cannot be used without a license. Also, even if you have purchased a license, it can only be used with one specific end product.
 Copyright 2020 © AppForest.kr
 https://AppForest.kr
